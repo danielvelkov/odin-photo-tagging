@@ -6,7 +6,6 @@ const StyledStartMenu = styled.div`
   height: 100%;
   display: grid;
   place-items: center;
-  gap: 10px;
 
   .title-wrapper {
     rotate: -2.5deg;
@@ -47,14 +46,16 @@ const StyledStartMenu = styled.div`
   }
 
   .thoughts {
+    margin-bottom: 5px;
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
   }
 `;
 
 const StyledBlockquote = styled.blockquote`
   font-family: 'Courier New', monospace;
-  line-height: 1.5;
+  font-size: small;
   max-width: 600px;
   text-align: left;
   padding: 1em 1.5em;
@@ -68,9 +69,16 @@ const StyledThought = styled.div`
   align-items: center;
   border: 5px solid ${(props) => props.theme.border.primary};
   padding: 0.5em;
+  max-width: 125px;
+  width: 100%;
 
   img {
     object-fit: cover;
+  }
+  span {
+    font-size: small;
+    word-break: break-word;
+    width: fit-content;
   }
 `;
 
@@ -90,7 +98,8 @@ export function StartMenu({ thoughts, startGame }) {
       <div className="title-wrapper">
         <h1>
           Disco Elysium
-          <br /> Cabinet
+          <br />
+          Cabinet Search
         </h1>
         <h3>a fan game</h3>
       </div>
@@ -107,13 +116,13 @@ export function StartMenu({ thoughts, startGame }) {
         </i>
       </StyledBlockquote>
 
-      <p>Find all the thoughts:</p>
+      <p style={{ margin: '0' }}>Find all the thoughts:</p>
 
       <div className="thoughts">
         {thoughts?.map((t) => (
           <StyledThought key={t.name}>
-            <img src={t.image} height={'100px'} width={'125px'} alt={t.name} />
-            <b>{t.name}</b>
+            <img src={t.image} height={'100px'} width={'100px'} alt={t.name} />
+            <span>{t.name}</span>
           </StyledThought>
         ))}
       </div>
