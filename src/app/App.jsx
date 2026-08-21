@@ -1,22 +1,49 @@
-// import { useState } from 'react';
+import { useState } from 'react';
 import Modal from '../components/util/Modal';
 import './App.css';
 import CabinetImg from '../assets/images/thought_cabinet.webp';
-// import styled from 'styled-components';
+import StartMenu from '../components/game/StartMenu';
+import styled from 'styled-components';
+
+const StyledBackdrop = styled.img`
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  filter: blur(5px);
+`;
+
+const FIVE_MINUTES_MS = 1000 * 60 * 5;
 
 function App() {
-  // const [isGameSessionActive, setIsGameSessionActive] = useState(false);
-  // const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isGameSessionActive, setIsGameSessionActive] = useState(false);
+  const [modalContent, setModalContent] = useState(
+    <StartMenu onStart={startGame}></StartMenu>,
+  );
+  const [username, setUsername] = useState('');
+
+  function startGame(name) {
+    setUsername(name);
+    setIsGameSessionActive(true);
+    console.log(username);
+    setTimeout(endGame, FIVE_MINUTES_MS);
+  }
+
+  function endGame() {
+    setModalContent(
+      <Modal>
+        <h1>Game over</h1>
+      </Modal>,
+    );
+  }
+
   return (
     <>
-      <Modal>
-        <h1>Hello world</h1>
-      </Modal>
-      <header></header>
+      {!isGameSessionActive && <Modal>{modalContent}</Modal>}
       <main>
-        <img src={CabinetImg}></img>
+        {!isGameSessionActive && (
+          <StyledBackdrop src={CabinetImg}></StyledBackdrop>
+        )}
       </main>
-      <footer></footer>
     </>
   );
 }
