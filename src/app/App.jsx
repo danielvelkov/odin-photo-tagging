@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Modal from '../components/util/Modal';
 import './App.css';
 import CabinetImg from '../assets/images/thought_cabinet.webp';
 import StartMenu from '../components/game/StartMenu';
 import styled from 'styled-components';
+import { getThoughts } from '../services/store/db';
 
 const StyledBackdrop = styled.img`
   height: 100%;
@@ -15,18 +16,35 @@ const StyledBackdrop = styled.img`
 const FIVE_MINUTES_MS = 1000 * 60 * 5;
 
 function App() {
+  const [thoughts, setThoughts] = useState([]);
   const [isGameSessionActive, setIsGameSessionActive] = useState(false);
   const [modalContent, setModalContent] = useState(
-    <StartMenu onStart={startGame}></StartMenu>,
+    <i data-testid="loading-message" style={{ padding: '2em' }}>
+      Be patient...
+    </i>,
   );
   const [username, setUsername] = useState('');
 
-  function startGame(name) {
+  const startGame = useCallback((name) => {
     setUsername(name);
     setIsGameSessionActive(true);
-    console.log(username);
     setTimeout(endGame, FIVE_MINUTES_MS);
-  }
+  }, []);
+
+  if (username) console.log(username);
+
+  useEffect(() => {
+    getThoughts().then((thoughts) => {
+      setThoughts(thoughts);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (thoughts && thoughts.length > 0)
+      setModalContent(
+        <StartMenu onStart={startGame} thoughts={thoughts}></StartMenu>,
+      );
+  }, [thoughts, startGame]);
 
   function endGame() {
     setModalContent(
