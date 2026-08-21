@@ -13,6 +13,7 @@ const StyledDialog = styled.dialog`
   display: grid;
   place-items: center;
   z-index: 99;
+  border: none;
 
   &::backdrop {
     display: none;
