@@ -5,6 +5,7 @@ import CabinetImg from '../assets/images/thought_cabinet.webp';
 import StartMenu from '../components/game/StartMenu';
 import styled from 'styled-components';
 import { getThoughts } from '../services/store/db';
+import { shuffle } from '../services/helpers';
 
 const StyledBackdrop = styled.img`
   height: 100%;
@@ -35,7 +36,8 @@ function App() {
 
   useEffect(() => {
     getThoughts().then((thoughts) => {
-      setThoughts(thoughts);
+      const shuffledThoughts = shuffle([...thoughts]);
+      setThoughts(shuffledThoughts.slice(0, 3));
     });
   }, []);
 
