@@ -28,18 +28,18 @@ const Backdrop = styled.div`
 const ModalWrapper = styled.div`
   position: relative;
   z-index: 10;
-  display: grid;
-  place-content: center;
-`;
-
-const ModalContent = styled.div`
-  position: relative;
-  width: 100%;
   padding: 1.5rem;
   border: 2px solid ${(props) => props.theme.border.primary};
   border-radius: 0.75rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   background-color: ${(props) => props.theme.background.elevated};
+`;
+
+const ModalContent = styled.div`
+  width: 100%;
+  position: relative;
+  display: grid;
+  place-content: center;
 `;
 
 export function Modal({ children, ...rest }) {
