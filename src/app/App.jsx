@@ -44,6 +44,10 @@ function App() {
           <StyledBackdrop src={CabinetImg}></StyledBackdrop>
         )}
       </main>
+      <footer>
+        DISCLAIMER: This is a fan game. All rights reserved by Za/Um Studios.
+        Buy the original Disco Elysium to support the developers!
+      </footer>
     </>
   );
 }
