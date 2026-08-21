@@ -1,11 +1,18 @@
+@font-face {
+  font-family: 'Encode-Sans';
+  src: url('./styles/fonts/EncodeSans-Bold.ttf');
+  font-display: swap;
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family:
+    'Encode-Sans', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: only dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #111317;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,7 +32,9 @@ a:hover {
 body {
   margin: 0;
   display: flex;
+  flex-direction: column;
   place-items: center;
+  justify-content: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -51,4 +60,11 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+input {
+  display: block;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+  font-family: Arial, Helvetica, sans-serif;
 }
