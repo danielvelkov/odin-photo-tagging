@@ -119,13 +119,15 @@ export function StartMenu({ thoughts, startGame }) {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <label>Do you remember your name?</label>
+        <label id="name-label">Do you remember your name?</label>
         <input
           name="name"
-          defaultValue={'Raphaël Ambrosius Costeau'}
+          defaultValue="Raphaël Ambrosius Costeau"
           required
-          maxLength={50}
+          maxLength={25}
           pattern="^\w.*"
+          aria-labelledby="name-label"
+          aria-label="Name"
         />
         <button type="submit">Start</button>
       </form>
