@@ -6,9 +6,8 @@ const StyledDialog = styled.dialog`
   padding: 0;
   margin: 0;
   inset: 0;
-  position: fixed;
   width: 100%;
-  height: 100%;
+  height: 80%;
   background: transparent;
   display: grid;
   place-items: center;

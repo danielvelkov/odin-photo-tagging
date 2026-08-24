@@ -6,7 +6,7 @@ import CabinetImg from '../../assets/images/thought_cabinet.webp';
 import { StyledThought } from './StartMenu';
 import ContextMenu from '../util/ContextMenu';
 
-const StyledGameContainer = styled.div`
+const StyledGameContainer = styled.main`
   display: flex;
   align-items: center;
   gap: 5px;
@@ -25,6 +25,10 @@ const StyledThoughts = styled.div`
 
   ${StyledThought} {
     display: inline-block;
+    img {
+      height: fit-content;
+      width: 100%;
+    }
   }
 `;
 
@@ -109,51 +113,44 @@ function Game({ onTimerRunOut, thoughts }) {
   };
 
   return (
-    <>
-      <StyledGameContainer>
-        <StyledThoughts>
-          {thoughts.map((t) => (
-            <StyledThought key={t.name}>
-              <img
-                src={t.image}
-                height={'100px'}
-                width={'100px'}
-                alt={t.name}
-              />
-              <span>{t.name}</span>
-            </StyledThought>
-          ))}
-        </StyledThoughts>
+    <StyledGameContainer>
+      <StyledThoughts>
+        {thoughts.map((t) => (
+          <StyledThought key={t.name}>
+            <img src={t.image} alt={t.name} />
+            <span>{t.name}</span>
+          </StyledThought>
+        ))}
+      </StyledThoughts>
 
-        <StyledSearchArea
-          aria-haspopup="menu"
-          ref={imgRef}
-          onClick={handleGameAreaClick}
-          src={CabinetImg}
-          onLoad={handleImageLoad}
-          alt="Search area"
-        ></StyledSearchArea>
-        {contextMenuOpen && (
-          <ContextMenu
-            thoughts={thoughts}
-            coords={{
-              x: coords.pageX,
-              y: coords.pageY,
-            }}
-          ></ContextMenu>
-        )}
-      </StyledGameContainer>
+      <StyledSearchArea
+        aria-haspopup="menu"
+        ref={imgRef}
+        onClick={handleGameAreaClick}
+        src={CabinetImg}
+        onLoad={handleImageLoad}
+        alt="Search area"
+      ></StyledSearchArea>
+      {contextMenuOpen && (
+        <ContextMenu
+          thoughts={thoughts}
+          coords={{
+            x: coords.pageX,
+            y: coords.pageY,
+          }}
+        ></ContextMenu>
+      )}
       <StyledTimer data-testid="game-timer">{timeLeftString}</StyledTimer>
       <StyledTimer style={{ marginTop: '20px' }}>
         <span>{JSON.stringify(coords)}</span>
       </StyledTimer>
-    </>
+    </StyledGameContainer>
   );
 }
 
 Game.propTypes = {
   onTimerRunOut: PropTypes.func,
-  thoughts: PropTypes.array,
+  thoughts: PropTypes.array.isRequired,
 };
 
 export default Game;

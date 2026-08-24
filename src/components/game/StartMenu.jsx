@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const StyledStartMenu = styled.div`
-  width: 100%;
-  height: 100%;
   display: grid;
   place-items: center;
 
@@ -50,6 +48,8 @@ const StyledStartMenu = styled.div`
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
@@ -63,7 +63,7 @@ const StyledBlockquote = styled.blockquote`
   background: ${(props) => props.theme.background.surface || '#7cfbe3'};
 `;
 
-const StyledThought = styled.div`
+export const StyledThought = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -82,7 +82,7 @@ const StyledThought = styled.div`
   }
 `;
 
-export function StartMenu({ thoughts, startGame }) {
+export function StartMenu({ thoughts, onStart }) {
   function handleSubmit(e) {
     e.preventDefault();
 
@@ -90,7 +90,7 @@ export function StartMenu({ thoughts, startGame }) {
     const formData = new FormData(form);
 
     const formJson = Object.fromEntries(formData.entries());
-    startGame(formJson['name']);
+    onStart(formJson['name']);
   }
 
   return (
@@ -146,7 +146,7 @@ export function StartMenu({ thoughts, startGame }) {
 
 StartMenu.propTypes = {
   thoughts: PropTypes.arrayOf(PropTypes.object),
-  startGame: PropTypes.func,
+  onStart: PropTypes.func,
 };
 
 export default StartMenu;
