@@ -2,55 +2,98 @@ import PropTypes from 'prop-types';
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
+const Container = styled.div`
+  position: absolute;
+  left: ${({ $x }) => $x}px;
+  top: ${({ $y }) => $y}px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+`;
+
+const StyledSelectedArea = styled.div`
+  width: 48px;
+  height: 48px;
+  border: 3px dashed black;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background-color: white;
+  opacity: 0.5;
+`;
+
 const StyledMenu = styled.div`
   position: absolute;
+  pointer-events: auto;
+
+  /* Position the menu to the right of the target 10px gap */
+  left: ${({ $flipX }) => ($flipX ? 'auto' : 'calc(100% + 10px)')};
+  right: ${({ $flipX }) => ($flipX ? 'calc(100% + 10px)' : 'auto')};
+  top: ${({ $flipY }) => ($flipY ? 'auto' : '0')};
+  bottom: ${({ $flipY }) => ($flipY ? '0' : 'auto')};
+
   display: flex;
   flex-direction: column;
-  max-width: 150px;
-
-  left: ${({ $leftValue }) => ($leftValue ? `${$leftValue}px` : '0px')};
-  top: ${({ $topValue }) => ($topValue ? `${$topValue}px` : '0px')};
-  transform: ${({ $flipped }) => ($flipped ? 'translateX(-100%)' : 'none')};
+  min-width: 100px;
+  max-width: 180px;
+  border: 1px solid #ccc;
 
   button {
-    border-radius: 0px;
-    border: 1px solid;
-    font-size: small;
+    border: none;
+    padding: 0.6em 1em;
+    font-size: 0.75rem;
+    text-align: left;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+    border-radius: 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 `;
 
 function ContextMenu({ thoughts, coords }) {
-  const [flipped, setFlipped] = useState(false);
+  const [placement, setPlacement] = useState({ flipX: false, flipY: false });
+
   const callBackRef = useCallback((domNode) => {
-    const windowWidth = window.innerWidth;
     if (domNode) {
-      const { x, width } = domNode.getBoundingClientRect();
-      if (x + width > windowWidth) setFlipped(true);
+      const rect = domNode.getBoundingClientRect();
+      const flipX = rect.right > window.innerWidth;
+      const flipY = rect.bottom > window.innerHeight;
+
+      setPlacement({ flipX, flipY });
     }
   }, []);
 
+  if (!coords) return null;
+
   return (
-    <StyledMenu
-      ref={callBackRef}
-      $leftValue={coords.x}
-      $topValue={coords.y}
-      $flipped={flipped}
-      role="menu"
-    >
-      {thoughts.map((t) => (
-        <button key={t.name} role="menuitem">
-          {t.name}
-        </button>
-      ))}
-    </StyledMenu>
+    <Container $x={coords.x} $y={coords.y}>
+      <StyledSelectedArea />
+      <StyledMenu
+        ref={callBackRef}
+        $flipX={placement.flipX}
+        $flipY={placement.flipY}
+        role="menu"
+      >
+        {thoughts.map((t) => (
+          <button key={t.name} role="menuitem">
+            {t.name}
+          </button>
+        ))}
+      </StyledMenu>
+    </Container>
   );
 }
 
 ContextMenu.propTypes = {
-  thoughts: PropTypes.array,
+  thoughts: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }),
+  ),
   coords: PropTypes.shape({
-    x: PropTypes.number,
-    y: PropTypes.number,
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
   }),
 };
 
