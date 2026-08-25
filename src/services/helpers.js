@@ -6,3 +6,7 @@ export function shuffle(array) {
   }
   return arr;
 }
+
+export function scaleCoordinate(coord, imageSize, containerSize) {
+  return (coord / imageSize) * containerSize;
+}
