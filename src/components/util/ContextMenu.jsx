@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useCallback, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -17,14 +17,13 @@ const StyledSelectedArea = styled.div`
   border-radius: 50%;
   box-sizing: border-box;
   background-color: white;
-  opacity: 0.5;
+  opacity: 0.4;
 `;
 
 const StyledMenu = styled.div`
   position: absolute;
   pointer-events: auto;
 
-  /* Position the menu to the right of the target 10px gap */
   left: ${({ $flipX }) => ($flipX ? 'auto' : 'calc(100% + 10px)')};
   right: ${({ $flipX }) => ($flipX ? 'calc(100% + 10px)' : 'auto')};
   top: ${({ $flipY }) => ($flipY ? 'auto' : '0')};
@@ -51,18 +50,23 @@ const StyledMenu = styled.div`
   }
 `;
 
-function ContextMenu({ thoughts, coords }) {
+function ContextMenu({ thoughts, coords, onSelect }) {
+  const menuRef = useRef(null);
   const [placement, setPlacement] = useState({ flipX: false, flipY: false });
 
-  const callBackRef = useCallback((domNode) => {
-    if (domNode) {
-      const rect = domNode.getBoundingClientRect();
-      const flipX = rect.right > window.innerWidth;
-      const flipY = rect.bottom > window.innerHeight;
+  useLayoutEffect(() => {
+    if (menuRef.current && coords) {
+      const rect = menuRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Check overflow based on coordinates + menu dimensions instead of standard bounding rect
+      const flipX = coords.x + rect.width + 100 > viewportWidth; // add some leeway
+      const flipY = coords.y + rect.height > viewportHeight;
 
       setPlacement({ flipX, flipY });
     }
-  }, []);
+  }, [coords]);
 
   if (!coords) return null;
 
@@ -70,13 +74,13 @@ function ContextMenu({ thoughts, coords }) {
     <Container $x={coords.x} $y={coords.y}>
       <StyledSelectedArea />
       <StyledMenu
-        ref={callBackRef}
+        ref={menuRef}
         $flipX={placement.flipX}
         $flipY={placement.flipY}
         role="menu"
       >
         {thoughts.map((t) => (
-          <button key={t.name} role="menuitem">
+          <button key={t.name} role="menuitem" onClick={() => onSelect(t)}>
             {t.name}
           </button>
         ))}
@@ -95,6 +99,7 @@ ContextMenu.propTypes = {
     x: PropTypes.number.isRequired,
     y: PropTypes.number.isRequired,
   }),
+  onSelect: PropTypes.func,
 };
 
 export default ContextMenu;
