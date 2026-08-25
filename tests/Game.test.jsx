@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import Game from '../src/components/game/Game';
 import { act, fireEvent, render, screen, within } from './test-util';
-// import userEvent from '@testing-library/user-event';
 import { MOCK_thoughts } from '../src/services/store/__mocks__/db';
 
 describe('Game', () => {
@@ -13,7 +12,7 @@ describe('Game', () => {
   it('calls onGameEnd() cb when 5 min timer runs out', async () => {
     vi.useFakeTimers();
     const mockHandler = vi.fn();
-    render(<Game thoughts={MOCK_thoughts} onTimerRunOut={mockHandler} />);
+    render(<Game thoughts={MOCK_thoughts} onGameComplete={mockHandler} />);
     expect(mockHandler).not.toHaveBeenCalled();
     act(() => {
       vi.advanceTimersByTime(1000 * 60 * 5);
@@ -30,7 +29,7 @@ describe('Game', () => {
   describe('Context menu', () => {
     beforeEach(async () => {
       render(<Game thoughts={MOCK_thoughts} />);
-      const gameArea = screen.getByRole('img', { name: /search area/i });
+      const gameArea = screen.getByTestId('search-area');
       expect(screen.queryByTestId('guess-menu')).not.toBeInTheDocument();
       fireEvent.click(gameArea);
     });
