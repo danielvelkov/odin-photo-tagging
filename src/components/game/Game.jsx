@@ -5,8 +5,9 @@ import styled from 'styled-components';
 import CabinetImg from '../../assets/images/thought_cabinet.webp';
 import { StyledThought } from './StartMenu';
 import ContextMenu from '../util/ContextMenu';
+import { scaleCoordinate } from '../../services/helpers';
 
-const StyledGameContainer = styled.main`
+const StyledGameContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
@@ -14,6 +15,40 @@ const StyledGameContainer = styled.main`
     flex-wrap: wrap;
   }
   justify-content: center;
+  width: 100%;
+`;
+
+const CheckableStyledThought = styled(StyledThought)`
+  position: relative;
+  color: ${({ $checked }) => ($checked ? `green` : 'white')};
+  overflow: hidden;
+
+  ${({ $checked }) =>
+    $checked
+      ? `
+  &:before,
+  &:after {
+    position: absolute;
+    content: '';
+    background: white;
+    display: block;
+    width: 100%;
+    height: 10px;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg); 
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+  }
+
+  &:after {
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+`
+      : ''};
 `;
 
 const StyledThoughts = styled.div`
@@ -38,25 +73,42 @@ const StyledTimer = styled.div`
   right: 5vw;
 `;
 
-const StyledSearchArea = styled.img`
+const StyledSearchArea = styled.main`
   flex: auto;
   height: 100%;
-  width: 80%;
-  object-fit: contain;
-  flex-basis: minmax(80vw, 300px);
+  max-height: 50vh;
   cursor: crosshair;
+  overflow: auto;
+
+  @media (min-width: 768px) {
+    width: 80%;
+    overflow-x: auto;
+    max-height: 80vh;
+  }
+
+  img {
+    width: 1200px;
+
+    @media (min-width: 768px) {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+  }
 `;
 
-function Game({ onTimerRunOut, thoughts }) {
+const FIVE_MINUTES_MS = 1000 * 60 * 5;
+
+function Game({ onGameComplete, thoughts }) {
   const [gameEnded, setGameEnded] = useState(false);
-  //   const [foundThoughts, setFoundThoughts] = useState([]);
+  const [foundThoughts, setFoundThoughts] = useState(new Set());
   const [duration, setDuration] = useState(
-    moment.duration(5 * 60 * 1000, 'milliseconds'),
+    moment.duration(FIVE_MINUTES_MS, 'milliseconds'),
   );
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [coords, setCoords] = useState({});
 
-  const imgRef = useRef();
+  const areaRef = useRef();
 
   useEffect(() => {
     if (!gameEnded) {
@@ -68,39 +120,29 @@ function Game({ onTimerRunOut, thoughts }) {
       if (duration.asMilliseconds() <= 0) {
         clearInterval(intervalId);
         setGameEnded(true);
-        onTimerRunOut();
+        onGameComplete(false);
       }
       return () => clearInterval(intervalId);
     }
-  }, [gameEnded, duration, onTimerRunOut]);
+  }, [gameEnded, duration, onGameComplete]);
   const minutes = String(duration.minutes()).padStart(2, '0');
   const seconds = String(duration.seconds()).padStart(2, '0');
 
   const timeLeftString = `${minutes}:${seconds}`;
 
   const handleGameAreaClick = (event) => {
+    if (event.target.tagName === 'BUTTON') return false;
     setContextMenuOpen((prev) => !prev);
-    console.log(event.nativeEvent.pageX, event.nativeEvent.pageY);
     event.offsetX = event.nativeEvent.offsetX;
     event.offsetY = event.nativeEvent.offsetY;
 
-    // Alternative: Using getBoundingClientRect()
-    const rect = imgRef.current.getBoundingClientRect();
-    const relativeX = event.clientX - rect.left; // X relative to box's left edge
-    const relativeY = event.clientY - rect.top; // Y relative to box's top edge
-    // console.log(
-    //   'Relative to box (getBoundingClientRect):',
-    //   relativeX,
-    //   relativeY,
-    // );
-    setCoords({
+    setCoords((prev) => ({
+      ...prev,
       offsetX: event.offsetX,
       offsetY: event.offsetY,
-      relativeX,
-      relativeY,
       pageX: event.nativeEvent.pageX,
       pageY: event.nativeEvent.pageY,
-    });
+    }));
   };
 
   const handleImageLoad = (e) => {
@@ -112,44 +154,81 @@ function Game({ onTimerRunOut, thoughts }) {
     }));
   };
 
+  const handleGuessSelect = (thought) => {
+    setContextMenuOpen(false);
+    const relativeX = scaleCoordinate(
+      coords.offsetX,
+      areaRef.current?.scrollWidth,
+      coords.width,
+    );
+    const relativeY = scaleCoordinate(
+      coords.offsetY,
+      areaRef.current?.scrollHeight,
+      coords.height,
+    );
+
+    const isWithinBounds =
+      relativeX >= thought.x &&
+      relativeX <= thought.x + thought.width &&
+      relativeY >= thought.y &&
+      relativeY <= thought.y + thought.height;
+
+    if (isWithinBounds) setFoundThoughts((prev) => prev.add(thought.name));
+  };
+
+  useEffect(() => {
+    if (foundThoughts.size === 3) {
+      setGameEnded(true);
+      onGameComplete(true, duration.asMilliseconds());
+    }
+  }, [foundThoughts, setGameEnded, duration, onGameComplete]);
+
   return (
     <StyledGameContainer>
       <StyledThoughts>
         {thoughts.map((t) => (
-          <StyledThought key={t.name}>
+          <CheckableStyledThought
+            $checked={foundThoughts.has(t.name)}
+            key={t.name}
+          >
             <img src={t.image} alt={t.name} />
             <span>{t.name}</span>
-          </StyledThought>
+          </CheckableStyledThought>
         ))}
       </StyledThoughts>
 
       <StyledSearchArea
+        data-testid="search-area"
         aria-haspopup="menu"
-        ref={imgRef}
+        ref={areaRef}
         onClick={handleGameAreaClick}
-        src={CabinetImg}
-        onLoad={handleImageLoad}
-        alt="Search area"
-      ></StyledSearchArea>
-      {contextMenuOpen && (
-        <ContextMenu
-          thoughts={thoughts}
-          coords={{
-            x: coords.pageX,
-            y: coords.pageY,
+      >
+        <img
+          src={CabinetImg}
+          onLoad={handleImageLoad}
+          onError={() => {
+            throw new Error('Missing search area');
           }}
-        ></ContextMenu>
-      )}
+          alt="Search area"
+        ></img>
+        {contextMenuOpen && (
+          <ContextMenu
+            thoughts={thoughts}
+            coords={{
+              x: coords.pageX,
+              y: coords.pageY,
+            }}
+            onSelect={handleGuessSelect}
+          ></ContextMenu>
+        )}
+      </StyledSearchArea>
       <StyledTimer data-testid="game-timer">{timeLeftString}</StyledTimer>
-      <StyledTimer style={{ marginTop: '20px' }}>
-        <span>{JSON.stringify(coords)}</span>
-      </StyledTimer>
     </StyledGameContainer>
   );
 }
 
 Game.propTypes = {
-  onTimerRunOut: PropTypes.func,
+  onGameComplete: PropTypes.func,
   thoughts: PropTypes.array.isRequired,
 };
 
