@@ -10,3 +10,22 @@ export function shuffle(array) {
 export function scaleCoordinate(coord, imageSize, containerSize) {
   return (coord / imageSize) * containerSize;
 }
+
+export function formatDurationBetweenDates(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    throw new Error('Invalid dates passed');
+  }
+
+  const diff = end.getTime() - start.getTime();
+  if (diff < 0) {
+    throw new Error('End date must be after start date');
+  }
+
+  const minutes = String(Math.floor(diff / 60000)).padStart(2, '0');
+  const seconds = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+
+  return `${minutes}:${seconds}`;
+}
