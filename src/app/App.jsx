@@ -7,6 +7,12 @@ import styled from 'styled-components';
 import { getThoughts } from '../services/store/db';
 import { shuffle } from '../services/helpers';
 import Game from '../components/game/Game';
+import EndGameScreen from '../components/game/EndGameScreen';
+import {
+  endGameSession,
+  getLeaderboard,
+  startGameSession,
+} from '../services/store/__mocks__/db';
 
 const StyledBackdrop = styled.img`
   object-fit: cover;
@@ -16,29 +22,53 @@ const StyledBackdrop = styled.img`
 
 function App() {
   const [thoughts, setThoughts] = useState([]);
-  const [isGameSessionActive, setIsGameSessionActive] = useState(false);
+  const [currentGameSession, setCurrentGameSession] = useState(null);
   const [modalContent, setModalContent] = useState(
     <i data-testid="loading-message" style={{ padding: '2em' }}>
       Be patient...
     </i>,
   );
-  const [username, setUsername] = useState('');
 
-  const endGame = useCallback(() => {
-    setIsGameSessionActive(false);
-    setModalContent(
-      <Modal>
-        <h1>Game over</h1>
-      </Modal>,
-    );
+  const startGame = useCallback(async (name) => {
+    const gameSession = await startGameSession(name);
+    setCurrentGameSession(gameSession);
   }, []);
 
-  const startGame = useCallback((name) => {
-    setUsername(name);
-    setIsGameSessionActive(true);
-  }, []);
+  const endGame = useCallback(
+    async (isGameWon, time) => {
+      setCurrentGameSession(null);
+      setModalContent(
+        <i style={{ padding: '2em' }}>Archiving thought cabinet...</i>,
+      );
 
-  if (username) console.log(username);
+      try {
+        let gameSession = null;
+        let leaderboardScores = [];
+
+        if (isGameWon) {
+          gameSession = await endGameSession(
+            currentGameSession.id,
+            time,
+            isGameWon,
+          );
+          leaderboardScores = await getLeaderboard();
+        }
+
+        setModalContent(
+          <EndGameScreen
+            thoughts={thoughts}
+            isGameWon={isGameWon}
+            gameDetails={gameSession}
+            scores={leaderboardScores}
+          />,
+        );
+      } catch (error) {
+        console.error('Failed to sync :', error);
+        setModalContent(<p>Error reaching the thought cabinet.</p>);
+      }
+    },
+    [currentGameSession, thoughts],
+  );
 
   useEffect(() => {
     getThoughts().then((thoughts) => {
@@ -56,9 +86,9 @@ function App() {
 
   return (
     <>
-      {!isGameSessionActive && <Modal>{modalContent}</Modal>}
+      {!currentGameSession && <Modal>{modalContent}</Modal>}
 
-      {!isGameSessionActive ? (
+      {!currentGameSession ? (
         <StyledBackdrop src={CabinetImg}></StyledBackdrop>
       ) : (
         <Game thoughts={thoughts} onGameComplete={endGame}></Game>

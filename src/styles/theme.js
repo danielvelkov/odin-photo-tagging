@@ -3,9 +3,9 @@ export const theme = {
     primary: '#f5f5f5',
     secondary: '#c7c7c7',
     muted: '#8a8a8a',
-    error: '#ff6b6b',
+    error: '#ff4a4a',
     warning: '#e0e077',
-    success: '#9ccc65',
+    success: '#7cfbe3',
   },
   background: {
     base: '#0e0e12',
@@ -20,11 +20,4 @@ export const theme = {
     secondary: 'rgba(255, 255, 255, 0.04)',
     hover: 'rgba(224, 82, 82, 0.4)',
   },
-  accent: {
-    primary: '#e05252',
-    hover: '#eb6b6b',
-    soft: 'rgba(224, 82, 82, 0.26)',
-    muted: 'rgba(224, 82, 82, 0.08)',
-  },
-  shimmer: { base: '#2e2a48', highlight: '#5f5778' },
 };

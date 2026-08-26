@@ -33,7 +33,7 @@ const StyledMenu = styled.div`
   flex-direction: column;
   min-width: 100px;
   max-width: 180px;
-  border: 1px solid #ccc;
+  border: 2px solid ${(props) => props.theme.border.hover};
 
   button {
     border: none;
@@ -41,7 +41,7 @@ const StyledMenu = styled.div`
     font-size: 0.75rem;
     text-align: left;
     cursor: pointer;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid ${(props) => props.theme.border.hover};
     border-radius: 0;
 
     &:last-child {

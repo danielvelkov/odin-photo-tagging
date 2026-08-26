@@ -5,7 +5,7 @@ const LedgerContainer = styled.div`
   width: 100%;
   max-width: 600px;
   background: rgba(12, 15, 20, 0.9);
-  border: 2px solid ${(props) => props.theme.border?.primary || '#7cfbe3'};
+  border: 2px solid ${(props) => props.theme.border?.primary};
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
@@ -13,12 +13,11 @@ const LedgerContainer = styled.div`
 
 const LedgerHeader = styled.div`
   padding: 0.8rem 1rem;
-  border-bottom: 2px solid
-    ${(props) => props.theme.border?.primary || '#7cfbe3'};
+  border-bottom: 2px solid ${(props) => props.theme.border?.primary};
 
   h3 {
     margin: 0;
-    color: #7cfbe3;
+    color: ${(props) => props.theme.text.success};
     text-transform: uppercase;
     letter-spacing: 2px;
     font-family: 'Courier New', monospace;

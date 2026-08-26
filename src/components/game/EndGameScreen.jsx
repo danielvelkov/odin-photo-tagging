@@ -18,7 +18,8 @@ const HeaderWrapper = styled.div`
     props.$isWon
       ? 'linear-gradient(135deg, #091a14 0%, #0d291e 50%, #06130e 100%)'
       : 'linear-gradient(135deg, #1c0505 0%, #2b0a0a 50%, #120303 100%)'};
-  border: 3px solid ${(props) => (props.$isWon ? '#7cfbe3' : '#ff4a4a')};
+  border: 3px solid
+    ${(props) => (props.$isWon ? props.theme.text.success : props.theme.text.error)};
   padding: 0.6em 1.8em;
   transform: skewX(-10deg);
   border-radius: 0.2em;
@@ -32,7 +33,7 @@ const Title = styled.h1`
   font-size: clamp(1.5rem, 4vw, 2.5rem);
   transform: skewX(10deg);
   -webkit-text-stroke: 1.5px
-    ${(props) => (props.$isWon ? '#7cfbe3' : '#ff4a4a')};
+    ${(props) => (props.$isWon ? props.theme.text.success : props.theme.text.error)};
 `;
 
 const Subtitle = styled.p`
@@ -45,8 +46,9 @@ const Subtitle = styled.p`
 
 const RetryButton = styled.button`
   background: #000104;
-  color: ${(props) => (props.$isWon ? '#7cfbe3' : '#ff4a4a')};
-  border: 2px solid ${(props) => (props.$isWon ? '#7cfbe3' : '#ff4a4a')};
+  color: ${(props) => (props.$isWon ? props.theme.text.success : props.theme.text.error)};
+  border: 2px solid
+    ${(props) => (props.$isWon ? props.theme.text.success : props.theme.text.error)};
   padding: 0.8em 2em;
   font-family: 'Courier New', monospace;
   font-weight: bold;
@@ -58,7 +60,7 @@ const RetryButton = styled.button`
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
 
   &:hover {
-    background: ${(props) => (props.$isWon ? '#7cfbe3' : '#ff4a4a')};
+    background: ${(props) => (props.$isWon ? props.theme.text.success : props.theme.text.error)};
     color: #000104;
     transform: translateY(-2deg);
     box-shadow: 0px 6px 15px
@@ -125,7 +127,7 @@ const StyledThoughtWithContent = styled(StyledThought)`
     font-weight: bold;
     font-size: 0.75rem;
     letter-spacing: 1px;
-    color: ${(props) => (props.$isWon ? '#7cfbe3' : '#ff8585')};
+    color: ${(props) => (props.$isWon ? props.theme.text.success : props.theme.text.error)};
     margin-bottom: 0.2rem;
     display: inline-block;
   }

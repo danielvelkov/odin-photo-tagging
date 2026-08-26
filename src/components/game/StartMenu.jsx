@@ -10,7 +10,7 @@ const StyledStartMenu = styled.div`
     display: inline-block;
     padding: 0.5em 1em;
     background-color: black;
-    border: 3px solid #7cfbe3;
+    border: 3px solid ${(props) => props.theme.text.success};
     border-radius: 0.2em;
     transform: skewX(-3.5deg);
     filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.6));
@@ -21,7 +21,7 @@ const StyledStartMenu = styled.div`
       transform: skewX(5deg);
 
       /* Text outline effect */
-      -webkit-text-stroke: 1.5px #7cfbe3;
+      -webkit-text-stroke: 1.5px ${(props) => props.theme.text.success};
     }
 
     h3 {

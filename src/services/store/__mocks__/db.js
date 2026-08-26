@@ -195,12 +195,7 @@ export const MOCK_thoughts = [
   },
 ];
 
-export let MOCK_scores = Array.from({ length: 100 }, (v, i) => ({
-  id: i + 50,
-  name: 'Bob',
-  startTime: new Date().toString(),
-  endTime: new Date().toString(),
-}));
+export let MOCK_scores = [];
 
 const addFakeScore = (score) => {
   const mockScore = {
