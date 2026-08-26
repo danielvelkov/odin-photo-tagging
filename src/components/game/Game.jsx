@@ -1,4 +1,3 @@
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -75,10 +74,11 @@ const CheckableStyledThought = styled(StyledThought)`
     `}
 `;
 
-const StyledThoughts = styled.div`
+export const StyledThoughts = styled.div`
   display: flex;
   align-items: stretch;
   justify-content: center;
+  flex-wrap: wrap;
 
   @media (min-width: 1000px) {
     flex-direction: column;
@@ -116,37 +116,58 @@ const StyledSearchArea = styled.main`
   }
 `;
 
-const FIVE_MINUTES_MS = 1000 * 60 * 5;
+export const FIVE_MINUTES_MS = 1000 * 60 * 5;
 
 function Game({ onGameComplete, thoughts }) {
-  const [gameEnded, setGameEnded] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(FIVE_MINUTES_MS);
   const [foundThoughts, setFoundThoughts] = useState(new Set());
-  const [duration, setDuration] = useState(
-    moment.duration(FIVE_MINUTES_MS, 'milliseconds'),
-  );
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [coords, setCoords] = useState({});
   const [shakingThought, setShakingThought] = useState(null);
 
   const areaRef = useRef();
+  // Use a ref to act as an un-renderable lock. This guarantees
+  // onGameComplete only fires EXACTLY once.
+  const isGameOver = useRef(false);
 
   useEffect(() => {
-    if (!gameEnded) {
-      const intervalId = setInterval(
-        () =>
-          setDuration((prev) => moment.duration(prev - 1000, 'milliseconds')),
-        1000,
-      );
-      if (duration.asMilliseconds() <= 0) {
-        clearInterval(intervalId);
-        setGameEnded(true);
-        onGameComplete(false);
-      }
-      return () => clearInterval(intervalId);
+    // Set up the interval exactly once.
+    const intervalId = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1000) {
+          clearInterval(intervalId);
+          return 0;
+        }
+        return prevTime - 1000;
+      });
+    }, 1000);
+
+    // Cleanup when component unmounts
+    return () => clearInterval(intervalId);
+  }, []); // <-- Empty dependency array stops the interval churn
+
+  useEffect(() => {
+    // If we've already handled the game ending, do nothing.
+    if (isGameOver.current) return;
+
+    // Check Loss Condition
+    if (timeLeft <= 0) {
+      isGameOver.current = true;
+      onGameComplete(false);
+      return;
     }
-  }, [gameEnded, duration, onGameComplete]);
-  const minutes = String(duration.minutes()).padStart(2, '0');
-  const seconds = String(duration.seconds()).padStart(2, '0');
+
+    if (foundThoughts.size === thoughts.length) {
+      isGameOver.current = true;
+      onGameComplete(true, timeLeft);
+    }
+  }, [timeLeft, foundThoughts.size, thoughts.length, onGameComplete]);
+
+  const minutes = String(Math.floor(timeLeft / 60000)).padStart(2, '0');
+  const seconds = String(Math.floor((timeLeft % 60000) / 1000)).padStart(
+    2,
+    '0',
+  );
 
   const timeLeftString = `${minutes}:${seconds}`;
 
@@ -193,19 +214,13 @@ function Game({ onGameComplete, thoughts }) {
       relativeY >= thought.y &&
       relativeY <= thought.y + thought.height;
 
-    if (isWithinBounds) setFoundThoughts((prev) => prev.add(thought.name));
+    if (isWithinBounds)
+      setFoundThoughts((prev) => new Set([...prev, thought.name]));
     else {
       setShakingThought(thought);
       setTimeout(() => setShakingThought(null), 500);
     }
   };
-
-  useEffect(() => {
-    if (foundThoughts.size === 3) {
-      setGameEnded(true);
-      onGameComplete(true, duration.asMilliseconds());
-    }
-  }, [foundThoughts, setGameEnded, duration, onGameComplete]);
 
   return (
     <StyledGameContainer>
