@@ -10,7 +10,7 @@ import { scaleCoordinate } from '../../services/helpers';
 const StyledGameContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
   @media (max-width: 1000px) {
     flex-wrap: wrap;
   }
@@ -53,18 +53,13 @@ const CheckableStyledThought = styled(StyledThought)`
 
 const StyledThoughts = styled.div`
   display: flex;
+  align-items: stretch;
+  justify-content: center;
+
   @media (min-width: 1000px) {
     flex-direction: column;
   }
   gap: 5px;
-
-  ${StyledThought} {
-    display: inline-block;
-    img {
-      height: fit-content;
-      width: 100%;
-    }
-  }
 `;
 
 const StyledTimer = styled.div`

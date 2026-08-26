@@ -48,7 +48,6 @@ const StyledStartMenu = styled.div`
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    align-items: center;
     justify-content: center;
   }
 `;
@@ -71,8 +70,11 @@ export const StyledThought = styled.div`
   padding: 0.5em;
   max-width: 125px;
   width: 100%;
+  flex: 1;
 
   img {
+    width: 8rem;
+    height: 8rem;
     object-fit: cover;
   }
   span {
@@ -121,7 +123,7 @@ export function StartMenu({ thoughts, onStart }) {
       <div className="thoughts">
         {thoughts?.map((t) => (
           <StyledThought key={t.name}>
-            <img src={t.image} height={'100px'} width={'100px'} alt={t.name} />
+            <img src={t.image} alt={t.name} />
             <span>{t.name}</span>
           </StyledThought>
         ))}
