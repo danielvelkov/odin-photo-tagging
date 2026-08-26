@@ -57,6 +57,7 @@ const StyledBlockquote = styled.blockquote`
   font-size: small;
   max-width: 600px;
   text-align: left;
+  color: ${(props) => props.theme.text.secondary};
   padding: 1em 1.5em;
   border-left: 3px solid ${(props) => props.theme.border?.primary || '#7cfbe3'};
   background: ${(props) => props.theme.background.surface || '#7cfbe3'};
@@ -68,16 +69,14 @@ export const StyledThought = styled.div`
   align-items: center;
   border: 5px solid ${(props) => props.theme.border.primary};
   padding: 0.5em;
-  max-width: 125px;
+  max-width: 155px;
   width: 100%;
   flex: 1;
-  height: 100%;
-  justify-content: space-between;
   gap: 5px;
 
   img {
-    width: 8rem;
-    height: 8rem;
+    width: clamp(100px, 10vmax, 150px);
+    height: clamp(100px, 10vmax, 150px);
     object-fit: cover;
   }
   span {
@@ -121,7 +120,9 @@ export function StartMenu({ thoughts, onStart }) {
         </i>
       </StyledBlockquote>
 
-      <p style={{ margin: '0' }}>Find all the thoughts:</p>
+      <h4 style={{ textTransform: 'uppercase', margin: `1em` }}>
+        Find these thoughts
+      </h4>
 
       <div className="thoughts">
         {thoughts?.map((t) => (
@@ -132,7 +133,7 @@ export function StartMenu({ thoughts, onStart }) {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form style={{ margin: '1em' }} onSubmit={handleSubmit}>
         <label id="name-label">Do you remember your name?</label>
         <input
           name="name"

@@ -9,4 +9,8 @@
   overflow: auto;
   max-width: 100vw;
   min-height: 100vh;
+
+  @media (min-width: 1368px) {
+    padding: 0 10vmax;
+  }
 }
