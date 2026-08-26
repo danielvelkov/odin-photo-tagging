@@ -103,7 +103,7 @@ export const MOCK_thoughts = [
     width: 108,
     height: 172,
     problem: `Close your eyes. Let *The Consciousness* surge forward. A sharp pain fills your body as the Inner Eye opens violently. A cascade of presences, some benevolent, some malicious, flicker into existence around you. An ocean of souls. Different minds, different languages. There are so many of them, and their thoughts are so loud. It's scary and hard to control, but rubbing your temples with your fingers seems to help a bit. Do that. Yes, good. Now you just need to concentrate really, really hard...`,
-    solution: `t is done. You've broken loose from the confines of modern science and into the vault of extrasensory knowledge from *exotic* cultures. Mankind has always searched for a means to break the shackles restraining the mind. Some practice meditation, some take, like, a ton of DMT. You apparently only need to rub your temples -- and bam! The aether opens before you, presenting its dark secrets: entities in the void making contact. (Definitely not just because you're rubbing your temples and talking to yourself.)`,
+    solution: `It is done. You've broken loose from the confines of modern science and into the vault of extrasensory knowledge from *exotic* cultures. Mankind has always searched for a means to break the shackles restraining the mind. Some practice meditation, some take, like, a ton of DMT. You apparently only need to rub your temples -- and bam! The aether opens before you, presenting its dark secrets: entities in the void making contact. (Definitely not just because you're rubbing your temples and talking to yourself.)`,
   },
   {
     id: 9,
@@ -195,13 +195,19 @@ export const MOCK_thoughts = [
   },
 ];
 
-export let MOCK_scores = [];
+export let MOCK_scores = Array.from({ length: 100 }, (v, i) => ({
+  id: i + 50,
+  name: 'Bob',
+  startTime: new Date().toString(),
+  endTime: new Date().toString(),
+}));
 
 const addFakeScore = (score) => {
   const mockScore = {
-    id: score.id ? score.id : Math.max(MOCK_scores.map((s) => s.id)) + 1,
+    id: score?.id ? score.id : Math.max(...MOCK_scores.map((s) => s.id)) + 1,
     ...score,
   };
+  console.log(mockScore);
   MOCK_scores.push(mockScore);
   return mockScore;
 };
@@ -218,6 +224,7 @@ export async function startGameSession(name) {
 
 export async function endGameSession(id) {
   return new Promise((resolve, reject) => {
+    console.log(MOCK_scores);
     const mockScore = MOCK_scores.find((s) => s.id === id);
     if (mockScore) {
       const updatedScore = { ...mockScore, endTime: new Date().toString() };
