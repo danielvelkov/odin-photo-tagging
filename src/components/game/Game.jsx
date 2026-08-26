@@ -48,7 +48,31 @@ const CheckableStyledThought = styled(StyledThought)`
     transform: rotate(45deg);
   }
 `
-      : ''};
+      : ``};
+
+  ${({ $shaking }) =>
+    $shaking &&
+    `
+    animation: shake .5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    @keyframes shake {
+
+    40% {
+      translate: -4px 0;
+    }
+
+    55% {
+      translate: 4px 0;
+    }
+
+    70% {
+      translate: -2px 0;
+    }
+
+    85% {
+      translate: 2px 0;
+    }
+  }
+    `}
 `;
 
 const StyledThoughts = styled.div`
@@ -102,6 +126,7 @@ function Game({ onGameComplete, thoughts }) {
   );
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [coords, setCoords] = useState({});
+  const [shakingThought, setShakingThought] = useState(null);
 
   const areaRef = useRef();
 
@@ -169,6 +194,10 @@ function Game({ onGameComplete, thoughts }) {
       relativeY <= thought.y + thought.height;
 
     if (isWithinBounds) setFoundThoughts((prev) => prev.add(thought.name));
+    else {
+      setShakingThought(thought);
+      setTimeout(() => setShakingThought(null), 500);
+    }
   };
 
   useEffect(() => {
@@ -184,6 +213,7 @@ function Game({ onGameComplete, thoughts }) {
         {thoughts.map((t) => (
           <CheckableStyledThought
             $checked={foundThoughts.has(t.name)}
+            $shaking={t.name === shakingThought?.name}
             key={t.name}
           >
             <img src={t.image} alt={t.name} />

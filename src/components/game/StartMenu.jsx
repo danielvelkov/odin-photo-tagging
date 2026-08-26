@@ -71,6 +71,9 @@ export const StyledThought = styled.div`
   max-width: 125px;
   width: 100%;
   flex: 1;
+  height: 100%;
+  justify-content: space-between;
+  gap: 5px;
 
   img {
     width: 8rem;
