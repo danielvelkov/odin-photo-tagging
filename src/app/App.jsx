@@ -6,15 +6,13 @@ import StartMenu from '../components/game/StartMenu';
 import styled from 'styled-components';
 import { getThoughts } from '../services/store/db';
 import { shuffle } from '../services/helpers';
+import Game from '../components/game/Game';
 
 const StyledBackdrop = styled.img`
-  height: 100%;
-  width: 100%;
   object-fit: cover;
   filter: blur(5px);
+  max-height: 80vh;
 `;
-
-const FIVE_MINUTES_MS = 1000 * 60 * 5;
 
 function App() {
   const [thoughts, setThoughts] = useState([]);
@@ -26,10 +24,18 @@ function App() {
   );
   const [username, setUsername] = useState('');
 
+  const endGame = useCallback(() => {
+    setIsGameSessionActive(false);
+    setModalContent(
+      <Modal>
+        <h1>Game over</h1>
+      </Modal>,
+    );
+  }, []);
+
   const startGame = useCallback((name) => {
     setUsername(name);
     setIsGameSessionActive(true);
-    setTimeout(endGame, FIVE_MINUTES_MS);
   }, []);
 
   if (username) console.log(username);
@@ -42,29 +48,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (thoughts && thoughts.length > 0)
+    if (thoughts && thoughts.length > 0 && startGame)
       setModalContent(
         <StartMenu onStart={startGame} thoughts={thoughts}></StartMenu>,
       );
   }, [thoughts, startGame]);
 
-  function endGame() {
-    setModalContent(
-      <Modal>
-        <h1>Game over</h1>
-      </Modal>,
-    );
-  }
-
   return (
     <>
       {!isGameSessionActive && <Modal>{modalContent}</Modal>}
-      <main>
-        {!isGameSessionActive && (
-          <StyledBackdrop src={CabinetImg}></StyledBackdrop>
-        )}
-      </main>
-      <footer>
+
+      {!isGameSessionActive ? (
+        <StyledBackdrop src={CabinetImg}></StyledBackdrop>
+      ) : (
+        <Game thoughts={thoughts} onGameComplete={endGame}></Game>
+      )}
+      <footer style={{ maxWidth: 'max(300px, 80vw)' }}>
         DISCLAIMER: This is a fan game. All rights reserved by Za/Um Studios.
         Buy the original Disco Elysium to support the developers!
       </footer>
