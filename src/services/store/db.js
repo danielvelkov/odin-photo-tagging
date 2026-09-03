@@ -9,6 +9,7 @@ import {
   query,
   updateDoc,
   getDoc,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { getAuth, signInAnonymously } from 'firebase/auth';
 
@@ -66,7 +67,7 @@ export async function startGameSession(name) {
   try {
     const gameSession = {
       name,
-      startTime: new Date(),
+      startTime: serverTimestamp(),
       endTime: null,
     };
     const docRef = await addDoc(collection(db, 'scores'), gameSession);
@@ -78,10 +79,9 @@ export async function startGameSession(name) {
 
 export async function endGameSession(id) {
   try {
-    const endTime = new Date();
     const docRef = doc(db, 'scores', id);
     await updateDoc(docRef, {
-      endTime,
+      endTime: serverTimestamp(),
     });
     const updatedSnap = await getDoc(docRef);
     const data = updatedSnap.data();
