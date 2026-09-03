@@ -34,8 +34,10 @@ const StyledStartMenu = styled.div`
 
   form {
     display: flex;
-    flex-direction: column;
     gap: 1em;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 
     input {
       border: 2px solid ${(props) => props.theme.border.primary};
