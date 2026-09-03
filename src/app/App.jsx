@@ -4,15 +4,15 @@ import './App.css';
 import CabinetImg from '../assets/images/thought_cabinet.webp';
 import StartMenu from '../components/game/StartMenu';
 import styled from 'styled-components';
-import { getThoughts } from '../services/store/db';
+import {
+  getThoughts,
+  getLeaderboard,
+  startGameSession,
+  endGameSession,
+} from '../services/store/db';
 import { shuffle } from '../services/helpers';
 import Game from '../components/game/Game';
 import EndGameScreen from '../components/game/EndGameScreen';
-import {
-  endGameSession,
-  getLeaderboard,
-  startGameSession,
-} from '../services/store/__mocks__/db';
 
 const StyledBackdrop = styled.img`
   object-fit: cover;
@@ -35,7 +35,7 @@ function App() {
   }, []);
 
   const endGame = useCallback(
-    async (isGameWon, time) => {
+    async (isGameWon) => {
       setCurrentGameSession(null);
       setModalContent(
         <i style={{ padding: '2em' }}>Archiving thought cabinet...</i>,
@@ -46,14 +46,16 @@ function App() {
         let leaderboardScores = [];
 
         if (isGameWon) {
-          gameSession = await endGameSession(
-            currentGameSession.id,
-            time,
-            isGameWon,
-          );
+          gameSession = await endGameSession(currentGameSession.id);
           leaderboardScores = await getLeaderboard();
         }
 
+        if (gameSession)
+          gameSession = {
+            ...gameSession,
+            startTime: gameSession.startTime.toDate(),
+            endTime: gameSession.endTime.toDate(),
+          };
         setModalContent(
           <EndGameScreen
             thoughts={thoughts}
