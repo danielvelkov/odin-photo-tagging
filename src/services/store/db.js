@@ -51,7 +51,7 @@ export async function getLeaderboard() {
       id: doc.id,
       name: data.name,
       time,
-      duration: data.endTime.seconds - data.startTime.seconds,
+      duration: end.getTime() - start.getTime(),
     };
   });
 
