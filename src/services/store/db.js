@@ -55,7 +55,7 @@ export async function getLeaderboard() {
     };
   });
 
-  scores.sort((prev, next) => prev.duration > next.duration);
+  scores.sort((prev, next) => prev.duration - next.duration);
   return scores;
 }
 
